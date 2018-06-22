@@ -5,7 +5,7 @@ function canvas_resize(){
   var windowInnerWidth = window.innerWidth;
   var windowInnerHeight = window.innerHeight;
   canvas.setAttribute('width',windowInnerWidth);
-  canvas.setAttribute('height',windowInnerHeight);
+  canvas.setAttribute('height',windowInnerHeight/2);
 }
 window.addEventListener('resize', canvas_resize, false);
 canvas_resize();
@@ -49,24 +49,27 @@ class Person {
 // People: Personのリスト 全体の人数管理など
 class People {
     constructor() {
-        this.person = [];
+        this.people = [];
     }
 
     get length() {
-        return this.person.length;
+        return this.people.length;
     }
 
     enter() {
-        this.person.push(new Person());
+        this.people.push(new Person());
     }
 
     exit() {
-        this.person.shift();
+        this.people.shift();
     }
 
     draw() {
-        for (var p of this.person) {
-            p.draw();
+        for (var person of this.people) {
+            // 問題点 : 人を消すのがうまくできていない
+            if (person.position >= 3)
+                this.exit();
+            person.draw();
         }
     }
 }
@@ -76,11 +79,12 @@ class Cashier {
     constructor() {
         this.height = ball_r * 8;
         this.width = ball_r * 2;
+        this.pos = new Pos(canvas.width * 7/8, canvas.height/2 - this.height/2);
     }
     draw() {
         ctx.beginPath();
         ctx.fillStyle = "#0095DD";
-        ctx.fillRect(canvas.width * 7/8, canvas.height/2 - this.height/2, this.width, this.height);
+        ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
         ctx.closePath();
     }
 }
@@ -103,6 +107,7 @@ function init() {
     people = new People();
     cashier = new Cashier();
     line = new Line();
+    //graph = new Graph();
 }
 
 // 描画関数
