@@ -31,12 +31,14 @@ class Person {
         this.ball_r = Math.min(canvas.width/40, canvas.height/40);
     }
     get position() {
-        return this.pos.x;
+        return this.pos;
     }
     walk() {
         this.pos.x += 1;
     }
     draw() {
+        // 問題点: x軸方向にウィンドウサイズが変更されると人のx座標がずれる
+        this.pos.y = canvas.height / 2;
         ctx.beginPath();
         ctx.arc(this.pos.x, this.pos.y, this.ball_r, 0, Math.PI*2);
         ctx.fillStyle = "#0095DD";
@@ -66,7 +68,7 @@ class People {
 
     draw() {
         for (var person of this.people) {
-            if (person.position >= Cashier.position.x+ball_r)
+            if (person.position.x >= Cashier.x + ball_r)
                 this.exit();
             person.draw();
         }
@@ -75,15 +77,19 @@ class People {
 
 // Cashier: レジ
 class Cashier {
-    constructor() {
+    constructor(x,y) {
         this.height = ball_r * 8;
         this.width = ball_r * 2;
-        this.pos = new Pos(canvas.width * 7/8, canvas.height/2 - this.height/2);
+        this.x = x;
+        this.y = y;
+        this.pos = new Pos(this.x, this.y - this.height/2);
     }
     static get position() {
-        return new Pos(canvas.width * 7/8, canvas.height/2 - this.height/2);
+        return canvas.width * 7/8;
     }
     draw() {
+        this.pos.x = this.x();
+        this.pos.y = this.y() - this.height/2;
         ctx.beginPath();
         ctx.fillStyle = "#0095DD";
         ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
@@ -107,9 +113,8 @@ class Line {
 // 初期化
 function init() {
     people = new People();
-    cashier = new Cashier();
+    cashier = new Cashier(() => canvas.width * 7/8, () => canvas.height/2);
     line = new Line();
-    //graph = new Graph();
 }
 
 // 描画関数
