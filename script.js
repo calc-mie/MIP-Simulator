@@ -31,7 +31,7 @@ class Person {
         this.ball_r = Math.min(canvas.width/40, canvas.height/40);
     }
     get position() {
-        return this.pos;
+        return this.pos.x;
     }
     walk() {
         this.pos.x += 1;
@@ -66,8 +66,7 @@ class People {
 
     draw() {
         for (var person of this.people) {
-            // 問題点 : 人を消すのがうまくできていない
-            if (person.position >= 3)
+            if (person.position >= Cashier.position.x+ball_r)
                 this.exit();
             person.draw();
         }
@@ -80,6 +79,9 @@ class Cashier {
         this.height = ball_r * 8;
         this.width = ball_r * 2;
         this.pos = new Pos(canvas.width * 7/8, canvas.height/2 - this.height/2);
+    }
+    static get position() {
+        return new Pos(canvas.width * 7/8, canvas.height/2 - this.height/2);
     }
     draw() {
         ctx.beginPath();
